@@ -24,6 +24,9 @@ switch ($requestMethod) {
     case 'DELETE':
         $fontsGroupController->deleteGroup();
         break;
+    case 'OPTIONS':
+        http_response_code(200);
+        break;
     default:
         http_response_code(405);
         echo json_encode(['success' => false, 'message' => 'Method not allowed']);

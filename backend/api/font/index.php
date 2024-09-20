@@ -6,7 +6,7 @@ require_once '../../controllers/FontsController.php';
 header('Content-Type: application/json');
 
 header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
+header('Access-Control-Allow-Methods: *');
 header('Access-Control-Allow-Headers: Content-Type, Authorization');
 
 $requestMethod = $_SERVER['REQUEST_METHOD'];
@@ -23,8 +23,11 @@ switch ($requestMethod) {
     case 'DELETE':
         $fontsController->deleteFont();
         break;
+    case 'OPTIONS':
+        http_response_code(200);
+        break;
     default:
         http_response_code(405);
-        echo json_encode(['success' => false, 'message' => 'Method not allowed']);
+        echo json_encode(['success' => false, 'message' => 'Method' . $requestMethod . ' not allowed']);
         break;
 }
