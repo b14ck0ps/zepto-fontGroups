@@ -3,6 +3,9 @@ require_once '../../../config/Config.php';
 require_once '../../../controllers/FontsGroupController.php';
 
 header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type, Authorization');
 
 $requestMethod = $_SERVER['REQUEST_METHOD'];
 $fontsGroupController = new FontsGroupController();
