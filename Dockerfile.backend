@@ -1,0 +1,12 @@
+
+FROM php:8.0-apache
+WORKDIR /var/www/html
+COPY ./backend /var/www/html
+RUN chown -R www-data:www-data /var/www/html
+RUN docker-php-ext-install mysqli
+
+# Update Apache config to allow directory indexes
+RUN echo "<Directory /var/www/html>\nOptions Indexes FollowSymLinks\nAllowOverride All\nRequire all granted\n</Directory>" >> /etc/apache2/apache2.conf
+
+RUN a2enmod rewrite
+EXPOSE 8000
