@@ -1,12 +1,12 @@
-import './App.css'
+import React from 'react';
+import FontManager from './components/FontManager';
 
-function App() {
-
+const App: React.FC = () => {
   return (
-    <>
-      Hello World
-    </>
-  )
+    <div className="container mx-auto p-4">
+      <FontManager />
+    </div>
+  );
 }
 
-export default App
+export default App;
