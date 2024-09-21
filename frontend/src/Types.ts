@@ -4,6 +4,7 @@ export interface Font {
 
 export interface GroupFont {
     fontName: string;
+    font: string;
     size: number;
     price: number;
 }

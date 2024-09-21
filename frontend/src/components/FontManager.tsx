@@ -9,6 +9,7 @@ import { ApiResponse, FontGroup } from '../Types';
 const FontManager: React.FC = () => {
     const [fonts, setFonts] = useState<string[]>([]);
     const [groups, setGroups] = useState<FontGroup[]>([]);
+    const [groupToEdit, setGroupToEdit] = useState<FontGroup | null>(null);
 
     useEffect(() => {
         fetchFonts();
@@ -35,6 +36,12 @@ const FontManager: React.FC = () => {
 
     const handleGroupCreated = () => {
         fetchGroups();
+        setGroupToEdit(null);
+    };
+
+    const handleGroupUpdated = () => {
+        fetchGroups();
+        setGroupToEdit(null);
     };
 
     const handleFontDeleted = (font: string) => {
@@ -45,12 +52,24 @@ const FontManager: React.FC = () => {
         setGroups(groups.filter(group => group.name !== name));
     };
 
+    const handleGroupEdit = (group: FontGroup) => {
+        setGroupToEdit(group);
+    };
+
     return (
         <div>
             <FontUploader onFontUploaded={handleFontUploaded} />
             <FontList fonts={fonts} onFontDeleted={handleFontDeleted} />
-            <GroupCreator onGroupCreated={handleGroupCreated} />
-            <GroupList groups={groups} onGroupDeleted={handleGroupDeleted} />
+            <GroupCreator
+                onGroupCreated={handleGroupCreated}
+                groupToEdit={groupToEdit}
+                onGroupUpdated={handleGroupUpdated}
+            />
+            <GroupList
+                groups={groups}
+                onGroupDeleted={handleGroupDeleted}
+                onGroupEdit={handleGroupEdit}
+            />
         </div>
     );
 };

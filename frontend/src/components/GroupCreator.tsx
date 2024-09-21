@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-
-interface Font {
-    name: string;
-}
+import { FontGroup } from '../Types';
 
 interface GroupFont {
     fontName: string;
@@ -12,18 +9,40 @@ interface GroupFont {
     price: number;
 }
 
-interface GroupCreatorProps {
-    onGroupCreated: () => void;
+interface Font {
+    name: string;
 }
 
-const GroupCreator: React.FC<GroupCreatorProps> = ({ onGroupCreated }) => {
+interface GroupCreatorProps {
+    onGroupCreated: () => void;
+    groupToEdit?: FontGroup | null;
+    onGroupUpdated?: () => void;
+}
+
+const GroupCreator: React.FC<GroupCreatorProps> = ({ onGroupCreated, groupToEdit, onGroupUpdated }) => {
     const [groupName, setGroupName] = useState('');
     const [fonts, setFonts] = useState<Font[]>([]);
     const [groupFonts, setGroupFonts] = useState<GroupFont[]>([{ fontName: '', font: '', size: 0, price: 0 }]);
+    const [isEditing, setIsEditing] = useState(false);
 
     useEffect(() => {
         fetchFonts();
     }, []);
+
+    useEffect(() => {
+        if (groupToEdit) {
+            setGroupName(groupToEdit.name);
+            setGroupFonts(groupToEdit.fonts.map(font => ({
+                fontName: font.fontName,
+                font: font.font,
+                size: font.size,
+                price: font.price,
+            })));
+            setIsEditing(true);
+        } else {
+            resetForm();
+        }
+    }, [groupToEdit]);
 
     const fetchFonts = async () => {
         const response = await axios.get<{ fonts: string[] }>('http://localhost:8000/api/font/');
@@ -34,42 +53,58 @@ const GroupCreator: React.FC<GroupCreatorProps> = ({ onGroupCreated }) => {
         setGroupFonts([...groupFonts, { fontName: '', font: '', size: 0, price: 0 }]);
     };
 
-    const handleDeleteGroupRow = (index: number) => {
-        const updatedFonts = groupFonts.filter((_, i) => i !== index);
+    const handleGroupChange = (index: number, key: keyof GroupFont, value: string | number) => {
+        const updatedFonts = [...groupFonts];
+        updatedFonts[index] = { ...updatedFonts[index], [key]: value };
         setGroupFonts(updatedFonts);
     };
 
-    const handleGroupChange = (
-        index: number,
-        key: keyof GroupFont,
-        value: string | number
-    ) => {
-        const updatedFonts = [...groupFonts];
+    const resetForm = () => {
+        setGroupName('');
+        setGroupFonts([{ fontName: '', font: '', size: 0, price: 0 }]);
+        setIsEditing(false);
+    };
 
-        updatedFonts[index] = {
-            ...updatedFonts[index],
-            [key]: value,
+    const handleCancelEdit = () => {
+        resetForm();
+    };
+
+    const handleSubmit = async () => {
+        if (!groupName || groupFonts.filter((f) => f.fontName && f.font).length < 2) {
+            alert("Please provide at least two rows with font names and selected fonts for the group.");
+            return;
+        }
+
+        const groupData = {
+            name: groupName,
+            fonts: groupFonts.filter((f) => f.fontName && f.font),
         };
 
-        setGroupFonts(updatedFonts);
-    };
+        try {
+            if (isEditing && groupToEdit) {
+                await axios.put('http://localhost:8000/api/font/groups/', {
+                    oldName: groupToEdit.name, ...groupData,
+                });
 
-    const handleCreateGroup = async () => {
-        if (groupName && groupFonts.filter((f) => f.font).length >= 2) {
-            await axios.post('http://localhost:8000/api/font/groups/', {
-                name: groupName,
-                fonts: groupFonts.filter((f) => f.font),
-            });
+                if (onGroupUpdated) {
+                    onGroupUpdated();
+                }
+            } else {
+                await axios.post('http://localhost:8000/api/font/groups/', groupData);
+                onGroupCreated();
+            }
 
-            setGroupName('');
-            setGroupFonts([{ fontName: '', font: '', size: 0, price: 0 }]);
-            onGroupCreated();
+            resetForm();
+        } catch (error) {
+            console.error('Error submitting group:', error);
         }
     };
 
     return (
         <div className="mb-6 p-4 border rounded shadow-md bg-white">
-            <h2 className="text-lg font-bold mb-4">Create Font Group</h2>
+            <h2 className="text-lg font-bold mb-4">
+                {isEditing ? 'Edit Font Group' : 'Create Font Group'}
+            </h2>
 
             <input
                 type="text"
@@ -80,7 +115,7 @@ const GroupCreator: React.FC<GroupCreatorProps> = ({ onGroupCreated }) => {
             />
 
             {groupFonts.map((groupFont, index) => (
-                <div key={index} className="mb-4 grid grid-cols-5 gap-4">
+                <div key={index} className="mb-4 grid grid-cols-4 gap-4">
                     <input
                         type="text"
                         value={groupFont.fontName}
@@ -117,15 +152,9 @@ const GroupCreator: React.FC<GroupCreatorProps> = ({ onGroupCreated }) => {
                         placeholder="Price"
                         className="border rounded p-2"
                     />
-
-                    <button
-                        onClick={() => handleDeleteGroupRow(index)}
-                        className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-                    >
-                        Delete
-                    </button>
                 </div>
             ))}
+
             <button
                 onClick={handleAddGroupRow}
                 className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400 mr-2"
@@ -133,11 +162,19 @@ const GroupCreator: React.FC<GroupCreatorProps> = ({ onGroupCreated }) => {
                 Add Row
             </button>
             <button
-                onClick={handleCreateGroup}
+                onClick={handleSubmit}
                 className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
             >
-                Create Group
+                {isEditing ? 'Update Group' : 'Create Group'}
             </button>
+            {isEditing && (
+                <button
+                    onClick={handleCancelEdit}
+                    className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 ml-2"
+                >
+                    Cancel
+                </button>
+            )}
         </div>
     );
 };

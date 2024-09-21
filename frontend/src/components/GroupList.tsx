@@ -5,10 +5,10 @@ import { FontGroup } from '../Types';
 interface GroupListProps {
     groups: FontGroup[];
     onGroupDeleted: (name: string) => void;
-    onEditGroup: (group: FontGroup) => void;
+    onGroupEdit: (group: FontGroup) => void;
 }
 
-const GroupList: React.FC<GroupListProps> = ({ groups, onGroupDeleted, onEditGroup }) => {
+const GroupList: React.FC<GroupListProps> = ({ groups, onGroupDeleted, onGroupEdit }) => {
     const handleDeleteGroup = async (name: string) => {
         try {
             await axios.delete('http://localhost:8000/api/font/groups/', { data: { name } });
@@ -40,7 +40,7 @@ const GroupList: React.FC<GroupListProps> = ({ groups, onGroupDeleted, onEditGro
                             <td className="border-b py-2">{group.fonts.length}</td>
                             <td className="border-b py-2">
                                 <button
-                                    onClick={() => onEditGroup(group)}
+                                    onClick={() => onGroupEdit(group)}
                                     className="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600 mr-2"
                                 >
                                     Edit
