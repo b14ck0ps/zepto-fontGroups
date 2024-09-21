@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import React from 'react';
 import { FontGroup } from '../Types';
 
 interface GroupListProps {
@@ -7,27 +7,11 @@ interface GroupListProps {
     onGroupDeleted: (name: string) => void;
 }
 
-const GroupList: React.FC<GroupListProps> = ({ onGroupDeleted }) => {
-    const [groups, setGroups] = useState<FontGroup[]>([]);
-
-    useEffect(() => {
-        const fetchGroups = async () => {
-            try {
-                const response = await axios.get('http://localhost:8000/api/font/groups/');
-                setGroups(response.data.groups);
-            } catch (error) {
-                console.error('Error fetching font groups:', error);
-            }
-        };
-
-        fetchGroups();
-    }, []);
-
+const GroupList: React.FC<GroupListProps> = ({ groups, onGroupDeleted }) => {
     const handleDeleteGroup = async (name: string) => {
         try {
             await axios.delete('http://localhost:8000/api/font/groups/', { data: { name } });
             onGroupDeleted(name);
-            setGroups(groups.filter((group) => group.name !== name));
         } catch (error) {
             console.error('Error deleting group:', error);
         }
