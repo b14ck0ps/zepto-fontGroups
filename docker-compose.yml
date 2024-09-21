@@ -5,6 +5,7 @@ services:
       dockerfile: Dockerfile.backend
     volumes:
       - ./backend:/var/www/html
+      - backend-data:/var/www/html/uploads
     ports:
       - "8000:80"
     networks:
@@ -25,3 +26,6 @@ services:
 networks:
   app-network:
     driver: bridge
+
+volumes:
+  backend-data:

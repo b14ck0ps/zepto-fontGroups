@@ -4,7 +4,6 @@ WORKDIR /var/www/html
 COPY ./backend /var/www/html
 
 RUN chown -R www-data:www-data *
-RUN chmod -R 777 * 
-
+RUN chmod -R 755 /var/www/html/
 RUN a2enmod rewrite
 EXPOSE 8000
