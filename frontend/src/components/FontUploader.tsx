@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useDropzone, FileRejection } from 'react-dropzone';
 import axios from 'axios';
+import { AiOutlineCloudUpload } from 'react-icons/ai';
 
 interface FontUploaderProps {
     onFontUploaded: () => void;
@@ -43,8 +44,12 @@ const FontUploader: React.FC<FontUploaderProps> = ({ onFontUploaded }) => {
         <div {...getRootProps()} className="mb-6 p-4 border rounded shadow-md bg-white">
             <input {...getInputProps()} type="file" accept=".ttf" style={{ display: 'none' }} />
             <h2 className="text-lg font-bold mb-4">Upload Fonts</h2>
-            <div className="text-center border-dashed border-2 p-4">
-                Drag and drop your .ttf file here, or click to select a file.
+            <div className="text-center border-dashed border-2 p-4 text-gray-500">
+                <div className='flex justify-center mb-3'>
+                    <AiOutlineCloudUpload className='text-3xl' />
+                </div>
+                <span className='font-bold'>Click to Upload</span> or Drag and Drop
+                <p className='font-light'>Only TTF file allowed</p>
             </div>
             {error && <p className="text-red-500 mt-2">{error}</p>}
         </div>
