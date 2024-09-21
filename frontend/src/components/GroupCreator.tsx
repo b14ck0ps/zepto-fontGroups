@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FontGroup } from '../Types';
+import { RxCross2 } from 'react-icons/rx';
 
 interface GroupFont {
     fontName: string;
@@ -38,6 +39,11 @@ const GroupCreator: React.FC<GroupCreatorProps> = ({ onGroupCreated, groupToEdit
 
     const handleAddGroupRow = () => {
         setGroupFonts([...groupFonts, { fontName: '', font: '', size: 0, price: 0 }]);
+    };
+
+    const handleDeleteGroupRow = (index: number) => {
+        const updatedFonts = groupFonts.filter((_, i) => i !== index);
+        setGroupFonts(updatedFonts);
     };
 
     const handleGroupChange = (index: number, key: keyof GroupFont, value: string | number) => {
@@ -85,71 +91,84 @@ const GroupCreator: React.FC<GroupCreatorProps> = ({ onGroupCreated, groupToEdit
 
     return (
         <div className="mb-6 p-4 border rounded shadow-md bg-white">
-            <h2 className="text-lg font-bold mb-4">
+            <h2 className="text-lg font-bold mb-1">
                 {isEditing ? 'Edit Font Group' : 'Create Font Group'}
             </h2>
+            <p className='text-sm text-gray-500 mb-4'>You have to select at least 2 fonts.</p>
 
             <input
                 type="text"
                 value={groupName}
                 onChange={(e) => setGroupName(e.target.value)}
-                placeholder="Group Name"
+                placeholder="Group Title"
                 className="border rounded p-2 mb-4 w-full"
             />
 
             {groupFonts.map((groupFont, index) => (
-                <div key={index} className="mb-4 grid grid-cols-4 gap-4">
-                    <input
-                        type="text"
-                        value={groupFont.fontName}
-                        onChange={(e) => handleGroupChange(index, 'fontName', e.target.value)}
-                        placeholder="Font Name"
-                        className="border rounded p-2"
-                    />
-
-                    <select
-                        value={groupFont.font}
-                        onChange={(e) => handleGroupChange(index, 'font', e.target.value)}
-                        className="border rounded p-2"
+                <section key={index} className="mb-4 px-4 py-3 border rounded shadow-md bg-white relative">
+                    <button
+                        onClick={() => handleDeleteGroupRow(index)}
+                        className="absolute top-6 right-4 text-red-500 hover:text-red-600 text-xl"
                     >
-                        <option value="">Select Font</option>
-                        {availableFonts.map((font) => (
-                            <option key={font} value={font}>
-                                {font}
-                            </option>
-                        ))}
-                    </select>
+                        <RxCross2 />
+                    </button>
+                    <div className="my-1 grid grid-cols-3 gap-4">
+                        <input
+                            type="text"
+                            value={groupFont.fontName}
+                            onChange={(e) => handleGroupChange(index, 'fontName', e.target.value)}
+                            placeholder="Font Name"
+                            className="border rounded p-2"
+                        />
 
-                    <input
-                        type="number"
-                        value={groupFont.size}
-                        onChange={(e) => handleGroupChange(index, 'size', parseFloat(e.target.value))}
-                        placeholder="Size"
-                        className="border rounded p-2"
-                    />
+                        <select
+                            value={groupFont.font}
+                            onChange={(e) => handleGroupChange(index, 'font', e.target.value)}
+                            className="border rounded p-2"
+                        >
+                            <option value="">Select a Font</option>
+                            {availableFonts.map((font) => (
+                                <option key={font} value={font}>
+                                    {font}
+                                </option>
+                            ))}
+                        </select>
 
-                    <input
-                        type="number"
-                        value={groupFont.price}
-                        onChange={(e) => handleGroupChange(index, 'price', parseFloat(e.target.value))}
-                        placeholder="Price"
-                        className="border rounded p-2"
-                    />
-                </div>
+                        <input
+                            type="number"
+                            value={groupFont.size}
+                            onChange={(e) => handleGroupChange(index, 'size', parseFloat(e.target.value))}
+                            placeholder="Size"
+                            className="border rounded p-2"
+                            hidden={true}
+                        />
+
+                        <input
+                            type="number"
+                            value={groupFont.price}
+                            onChange={(e) => handleGroupChange(index, 'price', parseFloat(e.target.value))}
+                            placeholder="Price"
+                            className="border rounded p-2"
+                            hidden={true}
+                        />
+                    </div>
+                </section>
             ))}
 
-            <button
-                onClick={handleAddGroupRow}
-                className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400 mr-2"
-            >
-                Add Row
-            </button>
-            <button
-                onClick={handleSubmit}
-                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-            >
-                {isEditing ? 'Update Group' : 'Create Group'}
-            </button>
+            <div className='flex justify-between'>
+                <button
+                    onClick={handleAddGroupRow}
+                    className="border border-green-800 px-10 py-1 rounded hover:border-green-900 mr-2"
+                >
+                    + Add Row
+                </button>
+                <button
+                    onClick={handleSubmit}
+                    className="bg-green-800 text-white px-10 py-1 rounded hover:bg-green-900"
+                >
+                    {isEditing ? 'Update Group' : 'Create'}
+                </button>
+            </div>
         </div>
     );
 };

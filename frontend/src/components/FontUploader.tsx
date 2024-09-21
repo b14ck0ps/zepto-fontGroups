@@ -43,7 +43,6 @@ const FontUploader: React.FC<FontUploaderProps> = ({ onFontUploaded }) => {
     return (
         <div {...getRootProps()} className="mb-6 p-4 border rounded shadow-md bg-white">
             <input {...getInputProps()} type="file" accept=".ttf" style={{ display: 'none' }} />
-            <h2 className="text-lg font-bold mb-4">Upload Fonts</h2>
             <div className="text-center border-dashed border-2 p-4 text-gray-500">
                 <div className='flex justify-center mb-3'>
                     <AiOutlineCloudUpload className='text-3xl' />
