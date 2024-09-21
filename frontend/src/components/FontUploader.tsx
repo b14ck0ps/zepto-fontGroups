@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useDropzone, FileRejection } from 'react-dropzone';
 import axios from 'axios';
 
 interface FontUploaderProps {
@@ -6,39 +7,46 @@ interface FontUploaderProps {
 }
 
 const FontUploader: React.FC<FontUploaderProps> = ({ onFontUploaded }) => {
-    const [fontFile, setFontFile] = useState<File | null>(null);
+    const [error, setError] = useState<string | null>(null);
 
-    const handleFontUpload = async () => {
-        if (fontFile) {
+    const onDrop = async (acceptedFiles: File[], fileRejections: FileRejection[]) => {
+        if (fileRejections.length > 0) {
+            setError('Only .ttf files are allowed.');
+            return;
+        }
+
+        if (acceptedFiles.length > 0) {
             const formData = new FormData();
-            formData.append('font', fontFile);
+            formData.append('font', acceptedFiles[0]);
 
-            await axios.post('http://localhost:8000/api/font/', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
-
-            setFontFile(null);
-            onFontUploaded();
+            try {
+                await axios.post('http://localhost:8000/api/font/', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                });
+                onFontUploaded();
+                setError(null);
+            } catch (error) {
+                setError('An error occurred while uploading the font.');
+                console.error('Upload error:', error);
+            }
         }
     };
 
+    const { getRootProps, getInputProps } = useDropzone({
+        onDrop,
+        accept: { 'font/ttf': ['.ttf'] },
+    });
+
     return (
-        <div className="mb-6 p-4 border rounded shadow-md bg-white">
+        <div {...getRootProps()} className="mb-6 p-4 border rounded shadow-md bg-white">
+            <input {...getInputProps()} type="file" accept=".ttf" style={{ display: 'none' }} />
             <h2 className="text-lg font-bold mb-4">Upload Fonts</h2>
-            <input
-                type="file"
-                accept=".ttf"
-                className="border rounded p-2 mb-4"
-                onChange={(e) => setFontFile(e.target.files?.[0] || null)}
-            />
-            <button
-                onClick={handleFontUpload}
-                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-            >
-                Upload Font
-            </button>
+            <div className="text-center border-dashed border-2 p-4">
+                Drag and drop your .ttf file here, or click to select a file.
+            </div>
+            {error && <p className="text-red-500 mt-2">{error}</p>}
         </div>
     );
 };
