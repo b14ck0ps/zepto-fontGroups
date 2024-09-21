@@ -56,6 +56,10 @@ const FontManager: React.FC = () => {
         setGroupToEdit(group);
     };
 
+    const handleCancelEditing = () => {
+        setGroupToEdit(null);
+    };
+
     return (
         <div>
             <FontUploader onFontUploaded={handleFontUploaded} />
@@ -65,6 +69,7 @@ const FontManager: React.FC = () => {
                 groupToEdit={groupToEdit}
                 onGroupUpdated={handleGroupUpdated}
                 availableFonts={fonts}
+                onCancel={handleCancelEditing}
             />
             <GroupList
                 groups={groups}

@@ -15,9 +15,10 @@ interface GroupCreatorProps {
     groupToEdit?: FontGroup | null;
     onGroupUpdated?: () => void;
     availableFonts: string[];
+    onCancel: () => void;
 }
 
-const GroupCreator: React.FC<GroupCreatorProps> = ({ onGroupCreated, groupToEdit, onGroupUpdated, availableFonts }) => {
+const GroupCreator: React.FC<GroupCreatorProps> = ({ onGroupCreated, groupToEdit, onGroupUpdated, availableFonts, onCancel }) => {
     const [groupName, setGroupName] = useState('');
     const [groupFonts, setGroupFonts] = useState<GroupFont[]>([{ fontName: '', font: '', size: 0, price: 0 }]);
     const [isEditing, setIsEditing] = useState(false);
@@ -56,6 +57,11 @@ const GroupCreator: React.FC<GroupCreatorProps> = ({ onGroupCreated, groupToEdit
         setGroupName('');
         setGroupFonts([{ fontName: '', font: '', size: 0, price: 0 }]);
         setIsEditing(false);
+    };
+
+    const handleCancel = () => {
+        resetForm();
+        onCancel();
     };
 
     const handleSubmit = async () => {
@@ -168,6 +174,14 @@ const GroupCreator: React.FC<GroupCreatorProps> = ({ onGroupCreated, groupToEdit
                 >
                     {isEditing ? 'Update Group' : 'Create'}
                 </button>
+                {isEditing && (
+                    <button
+                        onClick={handleCancel}
+                        className="border border-red-500 text-red-500 px-10 py-1 rounded hover:bg-red-500 hover:text-white"
+                    >
+                        Cancel
+                    </button>
+                )}
             </div>
         </div>
     );
