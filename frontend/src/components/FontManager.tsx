@@ -23,7 +23,7 @@ const FontManager: React.FC = () => {
     };
 
     const fetchGroups = async () => {
-        const response = await axios.get<ApiResponse<FontGroup[]>>('/api/fonts/groups');
+        const response = await axios.get<ApiResponse<FontGroup[]>>('http://localhost:8000/api/font/groups/');
         if (Array.isArray(response.data.groups)) {
             setGroups(response.data.groups);
         }
