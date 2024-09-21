@@ -9,25 +9,17 @@ interface GroupFont {
     price: number;
 }
 
-interface Font {
-    name: string;
-}
-
 interface GroupCreatorProps {
     onGroupCreated: () => void;
     groupToEdit?: FontGroup | null;
     onGroupUpdated?: () => void;
+    availableFonts: string[];
 }
 
-const GroupCreator: React.FC<GroupCreatorProps> = ({ onGroupCreated, groupToEdit, onGroupUpdated }) => {
+const GroupCreator: React.FC<GroupCreatorProps> = ({ onGroupCreated, groupToEdit, onGroupUpdated, availableFonts }) => {
     const [groupName, setGroupName] = useState('');
-    const [fonts, setFonts] = useState<Font[]>([]);
     const [groupFonts, setGroupFonts] = useState<GroupFont[]>([{ fontName: '', font: '', size: 0, price: 0 }]);
     const [isEditing, setIsEditing] = useState(false);
-
-    useEffect(() => {
-        fetchFonts();
-    }, []);
 
     useEffect(() => {
         if (groupToEdit) {
@@ -44,11 +36,6 @@ const GroupCreator: React.FC<GroupCreatorProps> = ({ onGroupCreated, groupToEdit
         }
     }, [groupToEdit]);
 
-    const fetchFonts = async () => {
-        const response = await axios.get<{ fonts: string[] }>('http://localhost:8000/api/font/');
-        setFonts(response.data.fonts.map((fontName) => ({ name: fontName })));
-    };
-
     const handleAddGroupRow = () => {
         setGroupFonts([...groupFonts, { fontName: '', font: '', size: 0, price: 0 }]);
     };
@@ -63,10 +50,6 @@ const GroupCreator: React.FC<GroupCreatorProps> = ({ onGroupCreated, groupToEdit
         setGroupName('');
         setGroupFonts([{ fontName: '', font: '', size: 0, price: 0 }]);
         setIsEditing(false);
-    };
-
-    const handleCancelEdit = () => {
-        resetForm();
     };
 
     const handleSubmit = async () => {
@@ -130,9 +113,9 @@ const GroupCreator: React.FC<GroupCreatorProps> = ({ onGroupCreated, groupToEdit
                         className="border rounded p-2"
                     >
                         <option value="">Select Font</option>
-                        {fonts.map((font) => (
-                            <option key={font.name} value={font.name}>
-                                {font.name}
+                        {availableFonts.map((font) => (
+                            <option key={font} value={font}>
+                                {font}
                             </option>
                         ))}
                     </select>
@@ -167,14 +150,6 @@ const GroupCreator: React.FC<GroupCreatorProps> = ({ onGroupCreated, groupToEdit
             >
                 {isEditing ? 'Update Group' : 'Create Group'}
             </button>
-            {isEditing && (
-                <button
-                    onClick={handleCancelEdit}
-                    className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 ml-2"
-                >
-                    Cancel
-                </button>
-            )}
         </div>
     );
 };

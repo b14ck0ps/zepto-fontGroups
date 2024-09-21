@@ -64,6 +64,7 @@ const FontManager: React.FC = () => {
                 onGroupCreated={handleGroupCreated}
                 groupToEdit={groupToEdit}
                 onGroupUpdated={handleGroupUpdated}
+                availableFonts={fonts}
             />
             <GroupList
                 groups={groups}
