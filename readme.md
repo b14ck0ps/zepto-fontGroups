@@ -22,6 +22,9 @@ This project is fully containerized with Docker. To run the application, simply 
 ```bash
 docker-compose up --build
 ```
+## Demo Video
+[![Demo Video](https://i.imgur.com/3Qf11l5.png)](https://youtu.be/Ge0bFEfO130 "Watch the demo video")
+
 
 ## Development
 If you wish to edit the frontend live, navigate to the ./frontend directory and run:
