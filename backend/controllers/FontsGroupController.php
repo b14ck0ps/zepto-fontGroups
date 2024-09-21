@@ -23,6 +23,13 @@ class FontsGroupController
             exit;
         }
 
+        foreach ($input['fonts'] as $font) {
+            if (!isset($font['fontName']) || !isset($font['font']) || !isset($font['size']) || !isset($font['price'])) {
+                echo json_encode(['success' => false, 'message' => 'Each font entry must include fontName, font, size, and price.']);
+                exit;
+            }
+        }
+
         $groups = file_exists(Config::GROUP_FILE) ? json_decode(file_get_contents(Config::GROUP_FILE), true) : [];
         $groups[] = ['name' => $input['name'], 'fonts' => $input['fonts']];
 
@@ -39,6 +46,13 @@ class FontsGroupController
         if (!isset($input['name']) || count($input['fonts']) < 2) {
             echo json_encode(['success' => false, 'message' => 'A group must have a name and at least two fonts.']);
             exit;
+        }
+
+        foreach ($input['fonts'] as $font) {
+            if (!isset($font['fontName']) || !isset($font['font']) || !isset($font['size']) || !isset($font['price'])) {
+                echo json_encode(['success' => false, 'message' => 'Each font entry must include fontName, font, size, and price.']);
+                exit;
+            }
         }
 
         if (file_exists(Config::GROUP_FILE)) {

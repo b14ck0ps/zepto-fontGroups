@@ -5,9 +5,10 @@ import { FontGroup } from '../Types';
 interface GroupListProps {
     groups: FontGroup[];
     onGroupDeleted: (name: string) => void;
+    onEditGroup: (group: FontGroup) => void;
 }
 
-const GroupList: React.FC<GroupListProps> = ({ groups, onGroupDeleted }) => {
+const GroupList: React.FC<GroupListProps> = ({ groups, onGroupDeleted, onEditGroup }) => {
     const handleDeleteGroup = async (name: string) => {
         try {
             await axios.delete('http://localhost:8000/api/font/groups/', { data: { name } });
@@ -25,6 +26,7 @@ const GroupList: React.FC<GroupListProps> = ({ groups, onGroupDeleted }) => {
                     <tr>
                         <th className="border-b py-2">Name</th>
                         <th className="border-b py-2">Fonts</th>
+                        <th className="border-b py-2">Count</th>
                         <th className="border-b py-2">Actions</th>
                     </tr>
                 </thead>
@@ -32,8 +34,17 @@ const GroupList: React.FC<GroupListProps> = ({ groups, onGroupDeleted }) => {
                     {groups.map((group) => (
                         <tr key={group.name}>
                             <td className="border-b py-2">{group.name}</td>
-                            <td className="border-b py-2">{group.fonts.join(', ')}</td>
                             <td className="border-b py-2">
+                                {group.fonts.map((font) => font.fontName).join(', ')}
+                            </td>
+                            <td className="border-b py-2">{group.fonts.length}</td>
+                            <td className="border-b py-2">
+                                <button
+                                    onClick={() => onEditGroup(group)}
+                                    className="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600 mr-2"
+                                >
+                                    Edit
+                                </button>
                                 <button
                                     onClick={() => handleDeleteGroup(group.name)}
                                     className="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600"
